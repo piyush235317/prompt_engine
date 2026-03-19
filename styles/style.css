@@ -1,15 +1,32 @@
 /* ===== Base ===== */
 
-body {
-    width: 450px;
-    height: 565px;
-    background: linear-gradient(180deg, #0d1117, #161b22);
-    color: #e6edf3;
-    font-family: "Segoe UI", monospace;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+#prompt-box {
+    position: fixed;
+    right: 20px;
+    top: 58px;
+    width: 410px;
+    height: 85vh;
+    background: #ffffff;
+    color: #000;
+    z-index: 999999;
+    border-radius: 8px;
+    overflow-y: auto;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+/* ❌ Hide on tablet */
+@media (max-width: 1024px) {
+    #prompt-box {
+        display: none;
+    }
+}
+
+/* ❌ Hide on mobile */
+@media (max-width: 768px) {
+    #prompt-box {
+        display: none;
+    }
 }
 
 /* ===== Header ===== */
@@ -18,45 +35,48 @@ body {
     text-align: center;
     font-size: 18px;
     font-weight: 600;
-    color: #7ee787;
+    color: #c58001e3;
     padding: 12px 0;
     border-bottom: 1px solid #21262d;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* ===== Main ===== */
 
 .main {
     margin-left: 25px;
-    padding: 12px;
+    padding: 20px;
     overflow-y: auto;
 }
 
 /* ===== Cards ===== */
 
 .card {
-    background: #161b22;
-    border-radius: 5px;
-    padding: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    transition: 0.2s;
+  cursor: pointer;
+  padding: 3px;
+  border: 1px solid #ddd;
+  margin: 8px 0;
+  border-radius: 1px;
+  background: white;
 }
 
 .card:hover {
-    transform: translateY(-2px);
+  background: #f5f5f5;
 }
 
-/* ===== Card Header ===== */
-
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.use-btn,
+.action-btn {
+  cursor: pointer;
 }
 
 .card-title {
-    color: #7c7aad;
+    color: #fa9201;
     font-weight: 600;
     font-size: 12px;
     font-family: Verdana;
@@ -83,7 +103,7 @@ body {
 .card-content {
     font-size: 12.5px;
     line-height: 1.5;
-    color: #c9d1d9;
+    color: #67adf4;
     white-space: pre-wrap;
     font-family: 'areal', monospace;
 }
@@ -107,111 +127,53 @@ body {
     padding-top: 10px;
 }
 
-
-
-
-/* ===== Tabs ===== */
-
-.tab {
-    width: 100%;
-    text-align: center;
-    padding: 10px ;
-
-    
+/* ===== Layout inside prompt-box ===== */
+.app-container {
+    display: flex;
+    height: calc(100% - 50px);
 }
 
-.tab span {
-    display: block;
-    font-size: 18px;
-    margin-bottom: 2px;
-}
-
-.tab.active {
-    color: #7ee787;
-    cursor: pointer;
-}
-
-.tab:hover {
-    background: #161b22;
-}
-
-/* ===== Pages ===== */
-
-.tab-page {
-    display: none;
-}
-
-.tab-page.active {
-    display: block;
-}
-
-/* ===== Scrollbar ===== */
-
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #30363d;
-    border-radius: 6px;
-}
-.copy-wrap {
-    position: relative;
+/* ===== Sidebar ===== */
+#sidebar {
+    margin-top: 10px;
+    width: 50px;
+    background: #f5efe6;
+    border-right: 1px solid #21262d;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 10px;
 }
 
-.copy-msg {
-    font-size: 10px;
-    color: #7ee787;
-    margin-top: 2px;
-    display: none;
-}
-.ic{
+/* Sidebar tabs */
+.side-tab {
+    width: 100%;
+    text-align: center;
+    padding: 1  px 1px;
     cursor: pointer;
-}
-.tab-page {
-    display: none;
+    color: rgb(139, 151, 228);
+    font-size: 11px;
 }
 
-.tab-page.active {
+.side-tab span {
     display: block;
+    font-size: 16px;
 }
 
-.tab.active {
-    color: #4caf50;
+.side-tab:hover {
+     background-color: #dbcbb9;
+}
+
+.side-tab.active {
+    background-color: #dbcbb9;
+    color: #eb8b47;
     font-weight: bold;
 }
 
-.buy-btn {
-    padding: 8px 14px;
-    border: none;
-    background: #ff9800;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.buy-btn:hover {
-    background: #e68900;
-}
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.use-btn {
-    padding: 2px 10px;
-    font-size: 12px;
-    border: none;
-    background: rgb(59, 61, 68);
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.use-btn:hover {
-    background: #388e3c;
+/* ===== Content ===== */
+#tabs-container {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    border: black;
 }

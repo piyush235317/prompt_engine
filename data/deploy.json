@@ -1,0 +1,20 @@
+{
+  "cards": [
+    {
+      "title": "Deployment Guide",
+      "content": "Explain step by step how to deploy this project in a production environment."
+    },
+    {
+      "title": "CI/CD Setup",
+      "content": "Create a CI/CD pipeline for this project with proper explanation."
+    },
+    {
+      "title": "Hosting Options",
+      "content": "Suggest the best hosting platforms for this project and explain why."
+    },
+    {
+      "title": "Docker Setup",
+      "content": "Provide a complete Docker setup for this project with explanation."
+    }
+  ]
+}

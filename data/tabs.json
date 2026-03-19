@@ -1,0 +1,19 @@
+{
+  "tabs": [
+    { "id": "home", "name": "Home", "icon": "📁" },
+    { "id": "study", "name": "Study", "icon": "📚" },
+    { "id": "debug", "name": "Debug", "icon": "🐞" },
+    { "id": "Coding", "name": "Coding", "icon": "💻" },
+    { "id": "Content", "name": "Content", "icon": "✍️" },
+    { "id": "Data", "name": "Data", "icon": "📊" },
+    { "id": "Prep", "name": "Prep", "icon": "🎯" },
+    { "id": "Student", "name": "Student", "icon": "🎓" },
+    { "id": "ai", "name": "AI", "icon": "🤖" },
+    { "id": "Notes", "name": "Notes", "icon": "📝" },
+    { "id": "Chat", "name": "Chat", "icon": "🗣️" },
+    { "id": "Exam", "name": "Exam", "icon": "�" },
+    { "id": "Guides", "name": "Guides", "icon": "🧭" },
+    { "id": "Automate", "name": "Automate", "icon": "⚙️" },
+    { "id": "research", "name": "Research", "icon": "🔍" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "cards": [
+    {
+      "title": "Bug Analysis",
+      "content": "Analyze this bug step by step and explain the root cause clearly."
+    },
+    {
+      "title": "Fix Error",
+      "content": "Identify the issue in the code and provide a clean and optimized fix with explanation."
+    },
+    {
+      "title": "Code Debugging",
+      "content": "Debug the following code and explain each issue and its solution in simple terms."
+    },
+    {
+      "title": "Performance Issue",
+      "content": "Find performance bottlenecks in this code and suggest improvements."
+    }
+  ]
+}
