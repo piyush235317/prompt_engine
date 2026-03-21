@@ -8,14 +8,14 @@ createPanel();
 
         renderSidebar(tabsData, async (tabId) => {
             const data = await loadCards(tabId);
-            renderCards(data.cards);
+            renderCards(data.cards, tabId);
         });
 
         // default first tab
         const firstTab = tabsData.tabs[0];
         const data = await loadCards(firstTab.id);
 
-        renderCards(data.cards);
+        renderCards(data.cards, firstTab.id);
 
     } catch (e) {
         console.error("ERROR:", e);

@@ -1,179 +1,364 @@
-/* ===== Base ===== */
+/* ===== Base App Layout Variables ===== */
+:root {
+    --bg-light: rgba(240, 240, 245, 0.90); /* macOS styled light bg */
+    --bg-dark: rgba(35, 35, 35, 0.85);
+    --sidebar-light: rgba(0, 0, 0, 0.04);
+    --sidebar-dark: rgba(0, 0, 0, 0.15);
+    --text-light: #1d1d1f;
+    --text-dark: #f5f5f7;
+    --border-light: rgba(0, 0, 0, 0.05); /* Softer borders */
+    --border-dark: rgba(255, 255, 255, 0.08);
+    --card-light: rgba(255, 255, 255, 1);
+    --card-dark: rgba(45, 45, 45, 1);
+    --card-hover-light: rgba(0, 0, 0, 0.03);
+    --card-hover-dark: rgba(255, 255, 255, 0.04);
+    --accent: #007aff;
+    
+    /* Raised effect shadows */
+    --shadow-raised-light: 0 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 16px 40px rgba(0, 0, 0, 0.15);
+    --shadow-raised-dark: 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 16px 40px rgba(0, 0, 0, 0.4);
+}
 
 #prompt-box {
     position: fixed;
-    right: 20px;
-    top: 58px;
-    width: 410px;
-    height: 85vh;
-    background: #ffffff;
-    color: #000;
+    width: 450px;
+    height: 500px;
+    max-height: 85vh;
+    background: var(--bg-light);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    color: var(--text-light);
+    z-index: 999998;
+    border-radius: 18px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    padding: 0; /* Removing main padding so sidebar can be flush to the edge */
+    box-shadow: var(--shadow-raised-light);
+    resize: both;
+    min-width: 300px;
+    min-height: 300px;
+    max-width: 90vw;
+    max-height: 90vh;
+    
+    /* Font System */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+
+    /* Animation state */
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#prompt-box * {
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+#prompt-box.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+/* ===== FAB Button ===== */
+#fab-button {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007aff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     z-index: 999999;
-    border-radius: 8px;
-    overflow-y: auto;
-    padding: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease;
+    user-select: none;
+    font-size: 36px;
 }
 
-/* ❌ Hide on tablet */
-@media (max-width: 1024px) {
-    #prompt-box {
-        display: none;
-    }
+#fab-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(0, 122, 255, 0.5);
 }
 
-/* ❌ Hide on mobile */
-@media (max-width: 768px) {
-    #prompt-box {
-        display: none;
-    }
+#fab-button:active {
+    transform: scale(0.95);
 }
 
 /* ===== Header ===== */
-
 .header {
     text-align: center;
-    font-size: 18px;
-    font-weight: 600;
-    color: #c58001e3;
-    padding: 12px 0;
-    border-bottom: 1px solid #21262d;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-/* ===== Main ===== */
-
-.main {
-    margin-left: 25px;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-/* ===== Cards ===== */
-
-.card {
-  cursor: pointer;
-  padding: 3px;
-  border: 1px solid #ddd;
-  margin: 8px 0;
-  border-radius: 1px;
-  background: white;
-}
-
-.card:hover {
-  background: #f5f5f5;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.use-btn,
-.action-btn {
-  cursor: pointer;
-}
-
-.card-title {
-    color: #fa9201;
-    font-weight: 600;
-    font-size: 12px;
-    font-family: Verdana;
-}
-
-/* ===== Copy Button ===== */
-
-.copy-btn {
-    background: #21262d;
-    border: none;
-    color: #7ee787;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.copy-btn:hover {
-    background: #30363d;
-}
-
-/* ===== Text ===== */
-
-.card-content {
-    font-size: 12.5px;
-    line-height: 1.5;
-    color: #67adf4;
-    white-space: pre-wrap;
-    font-family: 'areal', monospace;
-}
-
-/* ===== Bottom Bar ===== */
-
-.bottom-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 60px;
-    height: 100%;
-    background: #0d1117;
-    border-right: 1px solid #21262d;
-
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-light);
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border-light);
+    background: transparent;
+    position: relative;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-
-    padding-top: 10px;
+    justify-content: center;
 }
 
-/* ===== Layout inside prompt-box ===== */
+.theme-btn {
+    position: absolute;
+    top: 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    opacity: 0.5;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.theme-btn:hover {
+    background: var(--card-hover-light);
+    opacity: 1;
+}
+
+/* ===== Main Layout ===== */
 .app-container {
     display: flex;
-    height: calc(100% - 50px);
+    height: calc(100% - 44px);
 }
 
-/* ===== Sidebar ===== */
 #sidebar {
-    margin-top: 10px;
-    width: 50px;
-    background: #f5efe6;
-    border-right: 1px solid #21262d;
+    width: 75px;
+    background: var(--sidebar-light);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 10px;
+    padding-top: 14px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    border-right: 1px solid var(--border-light);
+}
+#sidebar::-webkit-scrollbar {
+    display: none;
 }
 
-/* Sidebar tabs */
 .side-tab {
-    width: 100%;
+    width: 85%;
     text-align: center;
-    padding: 1  px 1px;
+    padding: 8px 0;
+    margin-bottom: 6px;
     cursor: pointer;
-    color: rgb(139, 151, 228);
+    color: #8e8e93;
     font-size: 11px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-weight: 500;
 }
 
 .side-tab span {
     display: block;
-    font-size: 16px;
+    font-size: 22px;
+    margin-bottom: 4px;
 }
 
 .side-tab:hover {
-     background-color: #dbcbb9;
+    background-color: var(--card-hover-light);
 }
 
 .side-tab.active {
-    background-color: #dbcbb9;
-    color: #eb8b47;
-    font-weight: bold;
+    background-color: var(--card-light);
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 /* ===== Content ===== */
 #tabs-container {
     flex: 1;
-    padding: 10px;
+    padding: 14px;
     overflow-y: auto;
-    border: black;
+    scrollbar-width: none;
+}
+#tabs-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* ===== Cards ===== */
+.card {
+    cursor: pointer;
+    padding: 14px 16px;
+    border: 1px solid var(--border-light);
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: var(--card-light);
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    z-index: 10; /* Base stack */
+}
+
+.card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08); /* Float effect */
+}
+
+/* Abstract absolute mapping for the Kebab menu */
+.card-header {
+    position: absolute !important;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 5px;
+    transition: background 0.2s ease;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+}
+
+.card-header .menu-btn {
+    border-radius: 4px;
+    color: #8e8e93 !important;
+    font-size: 20px !important;
+    line-height: 1;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-header:hover .menu-btn {
+    background: var(--card-hover-light);
+    color: var(--text-light) !important;
+}
+
+.card-content {
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--text-light);
+    white-space: pre-wrap;
+    padding-right: 24px; /* Stop text running into kebab */
+}
+
+/* ===== Card Menu Dropdown ===== */
+.menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 28px;
+    background: var(--card-light);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 1000;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 120px;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+.menu-dropdown button {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 14px;
+    width: 100%;
+    color: var(--text-light);
+    transition: background 0.2s;
+    font-weight: 500;
+}
+
+.menu-dropdown button:hover {
+    background: var(--card-hover-light);
+}
+
+.menu-dropdown .edit-btn {
+    border-bottom: 1px solid var(--border-light);
+}
+
+
+/* ===== Dark Mode Theme ===== */
+#prompt-box.dark-mode {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
+    box-shadow: var(--shadow-raised-dark);
+}
+
+#prompt-box.dark-mode .header {
+    border-bottom-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+#prompt-box.dark-mode .theme-btn {
+    color: var(--text-dark);
+}
+
+#prompt-box.dark-mode .theme-btn:hover {
+    background: var(--card-hover-dark);
+}
+
+#prompt-box.dark-mode #sidebar {
+    background: var(--sidebar-dark);
+    border-right-color: var(--border-dark); /* Kept soft */
+}
+
+#prompt-box.dark-mode .side-tab {
+    color: #98989d;
+}
+
+#prompt-box.dark-mode .side-tab:hover {
+    background: var(--card-hover-dark);
+}
+
+#prompt-box.dark-mode .side-tab.active {
+    background-color: var(--card-dark);
+    color: #0a84ff; /* Apple dark mode blue */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+#prompt-box.dark-mode .card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+#prompt-box.dark-mode .card:hover {
+    box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+}
+
+#prompt-box.dark-mode .card-header:hover .menu-btn {
+    background: var(--card-hover-dark);
+    color: var(--text-dark) !important;
+}
+
+#prompt-box.dark-mode .card-content {
+    color: var(--text-dark);
+}
+
+#prompt-box.dark-mode .menu-dropdown {
+    background: rgba(45, 45, 45, 0.98);
+    border-color: var(--border-dark);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#prompt-box.dark-mode .menu-dropdown button {
+    color: var(--text-dark);
+}
+
+#prompt-box.dark-mode .menu-dropdown button:hover {
+    background: var(--card-hover-dark);
+}
+
+#prompt-box.dark-mode .menu-dropdown .edit-btn {
+    border-bottom-color: var(--border-dark);
 }
