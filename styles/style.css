@@ -137,17 +137,20 @@
 }
 
 #sidebar {
-    margin-top: 10px;
-    width: 50px;
-    background: #f5efe6;
-    border-right: 1px solid #21262d;
+    width: 75px;
+    background: var(--sidebar-light);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 10px;
+    padding-top: 14px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    border-right: 1px solid var(--border-light);
+}
+#sidebar::-webkit-scrollbar {
+    display: none;
 }
 
-/* Sidebar tabs */
 .side-tab {
     width: 85%;
     text-align: center;
