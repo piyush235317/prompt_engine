@@ -20,8 +20,8 @@ function renderPromptLabUI() {
             #save-persona-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 122, 255, 0.45); }
             #save-persona-btn:active { transform: translateY(0); }
             
-            .segmented-control { display: flex; background: rgba(128,128,128,0.1); border-radius: 8px; padding: 2px; gap: 2px; }
-            .segment { flex: 1; padding: 6px 4px; font-size: 11px; border: none; background: transparent; cursor: pointer; border-radius: 6px; color: var(--text-color); opacity: 0.6; transition: all 0.2s; white-space: nowrap; }
+            .segmented-control { display: flex; flex-wrap: wrap; background: rgba(128,128,128,0.1); border-radius: 8px; padding: 2px; gap: 2px; }
+            .segment { flex: 1; min-width: 60px; padding: 6px 4px; font-size: 11px; border: none; background: transparent; cursor: pointer; border-radius: 6px; color: var(--text-color); opacity: 0.6; transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .segment.active { background: var(--accent); color: white; opacity: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
             /* Custom Select Styles (Moving here for robustness) */
@@ -49,9 +49,27 @@ function renderPromptLabUI() {
             
             @keyframes dropdownIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
-            #lab-enhance-btn { background: linear-gradient(135deg, #0A84FF 0%, #0056D2 100%); border: none; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
-            #lab-enhance-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(10, 132, 255, 0.4); }
-            #lab-enhance-btn:active { transform: translateY(0); }
+            #lab-enhance-btn { background: linear-gradient(135deg, #0A84FF 0%, #0056D2 100%); border: none; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); flex: 1; }
+            #lab-save-btn { background: rgba(128,128,128,0.1); border: 1px solid var(--border-light); color: var(--text-color); padding: 14px; border-radius: 12px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; opacity: 0.8; }
+            #lab-save-btn:hover { background: rgba(128,128,128,0.15); opacity: 1; transform: translateY(-1px); }
+            
+            .compact-card { cursor: pointer; border: 1px solid var(--border-light); border-radius: 16px; background: var(--card-light); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+            #prompt-box.dark-mode .compact-card { background: var(--card-dark); border-color: var(--border-dark); }
+            .compact-card-header { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(128,128,128,0.03); border-bottom: 1px solid transparent; transition: all 0.2s; }
+            .compact-card.expanded .compact-card-header { border-bottom-color: var(--border-light); }
+            #prompt-box.dark-mode .compact-card.expanded .compact-card-header { border-bottom-color: var(--border-dark); }
+            .compact-card-title { font-size: 13px; font-weight: 700; color: var(--text-color); opacity: 0.8; }
+            .compact-card-content { max-height: 44px; padding: 12px 16px; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; display: flex; flex-direction: column; }
+            .compact-card.expanded .compact-card-content { max-height: 500px; padding: 16px; }
+            
+            #lab-draft-input { 
+                width: 100%; min-height: 0; height: 0; background: transparent; border: none; color: var(--text-color); 
+                font-family: ui-monospace, SFMono-Regular, monospace; font-size: 14px; line-height: 1.6; resize: none; outline: none; 
+                transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; transform: translateY(10px); overflow: hidden;
+            }
+            .preview-text { font-size: 13px; color: var(--text-color); opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.4s ease; }
+            .compact-card.expanded .preview-text { opacity: 0; height: 0; margin-bottom: 0; pointer-events: none; }
+            .compact-card.expanded #lab-draft-input { opacity: 1; height: 200px; transform: translateY(0); }
         </style>
         <div class="prompt-lab-container no-scrollbar" style="display: flex; flex-direction: column; min-height: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
             <div style="margin-bottom: 20px; flex-shrink: 0;">
@@ -62,16 +80,28 @@ function renderPromptLabUI() {
                 <p style="margin: 0; font-size: 13px; color: var(--text-color); opacity: 0.6; line-height: 1.4; font-weight: 400;">Pull text from your active tab, enhance it, and push it back seamlessly.</p>
             </div>
 
-            <button id="lab-enhance-btn" class="btn-primary" style="width: 100%; padding: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 16px; flex-shrink: 0;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-                ✨ Magic Enhance & Push
-            </button>
-
-            <div class="lab-input-section" style="flex: 1; display: flex; flex-direction: column; min-height: 180px; margin-bottom: 20px; position: relative;">
-                <textarea id="lab-draft-input" placeholder="Type your prompt here, or click 'Magic Enhance' to pull from page..." style="flex: 1; width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); color: var(--text-color); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; line-height: 1.6; resize: none; outline: none; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);"></textarea>
+            <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-shrink: 0;">
+                <button id="lab-enhance-btn" class="btn-primary" title="Pull text and enhance with AI">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    ✨ Magic Enhance & Push
+                </button>
+                <button id="lab-save-btn" title="Save current draft to your library">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                </button>
             </div>
 
-            <div class="crafting-card" style="margin-top: auto;">
+            <div id="draft-card" class="compact-card">
+                <div class="compact-card-header">
+                    <span class="compact-card-title">Prompt Draft</span>
+                    <svg id="card-expand-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; transition: transform 0.3s;"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+                <div class="compact-card-content">
+                    <div id="preview-text" class="preview-text">Empty draft...</div>
+                    <textarea id="lab-draft-input" placeholder="Type your prompt here, or click 'Magic Enhance' to pull from page..."></textarea>
+                </div>
+            </div>
+
+            <div class="crafting-card" style="margin-top: 10px;">
                 <h3 class="crafting-title">Crafting Parameters</h3>
                 <span class="crafting-subtitle">Advanced Controls (Active)</span>
                 
@@ -126,8 +156,8 @@ function renderPromptLabUI() {
             </div>
 
             <div class="lab-toolbar" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 0; background: rgba(128,128,128,0.05); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                         <label class="apple-switch" style="position: relative; display: inline-block; width: 34px; height: 20px; margin: 0; flex-shrink: 0;">
                             <input type="checkbox" id="lab-context-btn" checked style="opacity: 0; width: 0; height: 0; position: absolute;">
                             <span class="apple-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(128,128,128,0.3); transition: .3s; border-radius: 20px;"></span>
@@ -135,9 +165,8 @@ function renderPromptLabUI() {
                         </label>
                         <label for="lab-context-btn" style="font-size: 13px; cursor: pointer; color: var(--text-color); opacity: 0.9; font-weight: 500; margin: 0;">Page Context</label>
                     </div>
-                    <div id="context-scope-container" class="custom-select" style="width: 125px;"></div>
+                    <div id="context-scope-container" class="custom-select" style="width: 135px; flex-grow: 1; min-width: 120px;"></div>
                 </div>
-                
             </div>
         </div>
     `;
@@ -445,10 +474,101 @@ function renderPromptLabUI() {
         return pushed;
     };
 
-    // Complexity Glow logic (Removed as we have a unified card now)
     const draftInput = container.querySelector("#lab-draft-input");
+    const previewText = container.querySelector("#preview-text");
+    const draftCard = container.querySelector("#draft-card");
+    const expandIcon = container.querySelector("#card-expand-icon");
     const enhanceBtn = container.querySelector("#lab-enhance-btn");
+    const saveBtn = container.querySelector("#lab-save-btn");
     const contextToggle = container.querySelector("#lab-context-btn");
+
+    // Toggle Card Expansion
+    draftCard.addEventListener("click", () => {
+        draftCard.classList.toggle("expanded");
+        const isExpanded = draftCard.classList.contains("expanded");
+        expandIcon.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
+        if (isExpanded) draftInput.focus();
+    });
+
+    // Prevent collapse when clicking inside textarea, but allow logic if needed
+    draftInput.addEventListener("click", (e) => e.stopPropagation());
+
+    // Update preview text
+    draftInput.addEventListener("input", () => {
+        previewText.innerText = draftInput.value.trim() || "Empty draft...";
+    });
+
+    // Save to Library Modal Logic
+    const showSaveModal = async () => {
+        const content = draftInput.value.trim();
+        if (!content) return alert("Nothing to save!");
+
+        const overlay = document.createElement("div");
+        overlay.className = "modal-overlay";
+        
+        const tabsResult = await new Promise(res => chrome.storage.local.get(['goprompts_tabs'], res));
+        const tabsData = tabsResult.goprompts_tabs || { tabs: [] };
+        
+        overlay.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-title">Save to Library</div>
+                
+                <div class="modal-field">
+                    <label class="modal-label">Prompt Heading</label>
+                    <input type="text" id="save-prompt-title" class="modal-input" placeholder="e.g. Code Refactor, Email Draft...">
+                </div>
+
+                <div class="modal-field">
+                    <label class="modal-label">Target Library Category</label>
+                    <div id="save-library-select" class="custom-select"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="save-cancel">Cancel</button>
+                    <button class="btn-primary" id="save-confirm">Save Prompt</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById("prompt-box").appendChild(overlay);
+        
+        const selectContainer = overlay.querySelector("#save-library-select");
+        const options = tabsData.tabs
+            .filter(t => t.id !== 'settings')
+            .map(t => ({ label: t.name, value: t.id }));
+            
+        const libSelect = createCustomSelect(selectContainer, options, options[0]?.value || 'home');
+
+        overlay.querySelector("#save-cancel").onclick = () => overlay.remove();
+        overlay.querySelector("#save-confirm").onclick = async () => {
+            const title = overlay.querySelector("#save-prompt-title").value.trim();
+            if (!title) return alert("Please enter a heading");
+
+            const targetTabId = libSelect.getValue();
+            const targetTab = tabsData.tabs.find(t => t.id === targetTabId);
+            
+            // Correct logic: Save to individual card storage keys
+            const cardData = await loadCards(targetTabId);
+            if (!cardData.cards) cardData.cards = [];
+            
+            cardData.cards.unshift({
+                title: title,
+                content: content
+            });
+            
+            await saveCards(targetTabId, cardData);
+            overlay.remove();
+            
+            // Show floating success
+            const toast = document.createElement("div");
+            toast.style.cssText = "position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.2);";
+            toast.innerText = "✓ Saved to " + (targetTab ? targetTab.name : 'Library');
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        };
+    };
+
+    saveBtn.addEventListener("click", showSaveModal);
 
     enhanceBtn.addEventListener("click", () => {
         // 1. Auto-pull if empty
