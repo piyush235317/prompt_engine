@@ -74,9 +74,43 @@ function renderSettingsUI() {
                 <input type="password" id="setting-key" value="${apiKey}" placeholder="Key goes here..." class="settings-input" style="font-family: ui-monospace, SFMono-Regular, monospace; letter-spacing: -0.5px;">
             </div>
 
+            <div class="settings-group" style="background: rgba(128,128,128,0.06); padding: 12px 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <label class="settings-label" style="margin: 0; opacity: 1; font-size: 13px;">Pipeline Status</label>
+                    <span id="ai-status-desc" style="font-size: 11px; opacity: 0.6;">Checking connectivity...</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div id="ai-status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: #8e8e93; transition: all 0.3s; box-shadow: 0 0 0 rgba(0,0,0,0);"></div>
+                </div>
+            </div>
+
             <button id="save-settings-btn" style="width: 100%; padding: 12px; cursor: pointer; border-radius: 8px; border: none; background: #0a84ff; color: white; font-weight: 600; font-size: 14.5px; transition: all 0.2s ease;">Save Configuration</button>
             <div class="settings-hint">API keys are heavily isolated and stored exclusively inside Chrome's offline memory structure.</div>
         `;
+
+        const statusDot = dynamicRoot.querySelector('#ai-status-dot');
+        const statusDesc = dynamicRoot.querySelector('#ai-status-desc');
+
+        const checkAIStatus = () => {
+            statusDot.style.background = '#ffd60a'; // Yellow for checking
+            statusDot.style.boxShadow = '0 0 8px rgba(255, 214, 10, 0.4)';
+            statusDesc.innerText = 'Pinging AI Provider...';
+
+            chrome.runtime.sendMessage({ type: "PING_PROVIDER" }, (res) => {
+                if (res && res.success) {
+                    statusDot.style.background = '#32d74b'; // Green
+                    statusDot.style.boxShadow = '0 0 10px rgba(50, 215, 75, 0.5)';
+                    statusDesc.innerText = res.message || 'System Online';
+                } else {
+                    statusDot.style.background = '#ff453a'; // Red
+                    statusDot.style.boxShadow = '0 0 10px rgba(255, 69, 58, 0.5)';
+                    statusDesc.innerText = res?.error || 'Connection Failed';
+                }
+            });
+        };
+
+        // Initial Check
+        checkAIStatus();
 
         const providerSelect = dynamicRoot.querySelector('#setting-provider');
         const keyContainer = dynamicRoot.querySelector('#api-key-container');
@@ -99,6 +133,9 @@ function renderSettingsUI() {
                 goprompts_api_key: newKey,
                 goprompts_ai_model: newModel
             }, () => {
+                // Re-check status after save
+                checkAIStatus();
+                
                 setTimeout(() => {
                     btn.innerText = 'Routing Synced!';
                     btn.style.background = '#32d74b';

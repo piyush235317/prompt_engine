@@ -192,6 +192,37 @@ Follow these rules strictly:
         });
 
         return true;
+    } else if (req.type === "PING_PROVIDER") {
+        chrome.storage.local.get(['goprompts_ai_provider', 'goprompts_api_key', 'goprompts_ai_model'], (settings) => {
+            const provider = settings.goprompts_ai_provider || 'ollama';
+            const model = settings.goprompts_ai_model || 'llama3';
+            const apiKey = settings.goprompts_api_key || '';
+
+            if (provider === 'ollama') {
+                fetch("http://localhost:11434/api/tags")
+                    .then(res => {
+                        if (res.ok) sendResponse({ success: true, message: "Ollama is Online" });
+                        else sendResponse({ success: false, error: "Ollama Server Error" });
+                    })
+                    .catch(() => sendResponse({ success: false, error: "Ollama Offline" }));
+            } else {
+                if (!apiKey) return sendResponse({ success: false, error: "Missing API Key" });
+                fetch("https://api.x.ai/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                    body: JSON.stringify({ model: model, messages: [{role: "user", content: "hi"}], max_tokens: 1 })
+                })
+                .then(async res => {
+                    if (res.ok) sendResponse({ success: true, message: "xAI API Online" });
+                    else {
+                        const errData = await res.json().catch(() => ({}));
+                        sendResponse({ success: false, error: errData.error?.message || "Invalid API Key" });
+                    }
+                })
+                .catch(() => sendResponse({ success: false, error: "xAI Unreachable" }));
+            }
+        });
+        return true;
     }
 
     return true; // Keep message port open for async

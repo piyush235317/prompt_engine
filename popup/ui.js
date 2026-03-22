@@ -299,22 +299,21 @@ function createPanel() {
 function updateApiStatus() {
     const dot = document.getElementById("api-status-dot");
     if (!dot) return;
-    chrome.storage.local.get(['goprompts_api_key', 'goprompts_ai_provider'], (settings) => {
-        const hasKey = !!settings.goprompts_api_key;
-        const provider = settings.goprompts_ai_provider || 'ollama';
-        
-        if (provider === 'ollama') {
-            dot.style.background = "#34C759"; // Ollama is local, assume green if active
-            dot.title = "Local Pipeline: Active";
-            dot.style.boxShadow = "0 0 6px rgba(52, 199, 89, 0.4)";
-        } else if (hasKey) {
-            dot.style.background = "#34C759";
-            dot.title = "Cloud API: Connected";
-            dot.style.boxShadow = "0 0 6px rgba(52, 199, 89, 0.4)";
+    
+    // Set to "checking" state initially
+    dot.style.background = "#ffd60a"; // Yellow
+    dot.style.boxShadow = "0 0 6px rgba(255, 214, 10, 0.4)";
+    dot.title = "Verifying Connection...";
+
+    chrome.runtime.sendMessage({ type: "PING_PROVIDER" }, (res) => {
+        if (res && res.success) {
+            dot.style.background = "#34C759"; // Green
+            dot.style.boxShadow = "0 0 8px rgba(52, 199, 89, 0.4)";
+            dot.title = res.message || "Pipeline: Online";
         } else {
-            dot.style.background = "#FF3B30";
-            dot.title = "API Key Missing";
-            dot.style.boxShadow = "0 0 6px rgba(255, 59, 48, 0.4)";
+            dot.style.background = "#FF3B30"; // Red
+            dot.style.boxShadow = "0 0 8px rgba(255, 59, 48, 0.4)";
+            dot.title = res?.error || "Pipeline: Offline";
         }
     });
 }
