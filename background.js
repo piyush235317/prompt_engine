@@ -69,9 +69,15 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
                 stream: false
               })
             })
-            .then(res => res.json())
-            .then(data => {
+            .then(async res => {
                 clearTimeout(timeoutId);
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`Server Error ${res.status}: ${text || res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(data => {
                 if (data.response) {
                     sendResponse({ success: true, output: data.response, content: data.response });
                 } else {
@@ -83,7 +89,7 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
               if (err.name === 'AbortError') {
                   sendResponse({ success: false, error: "Request timed out after 20 seconds. Is the local Ollama instance hung processing a heavy prompt?" });
               } else {
-                  sendResponse({ success: false, error: "Localhost Connection Refused. Please verify consequence that Ollama is currently running." });
+                  sendResponse({ success: false, error: "Ollama Connection Issue: " + err.message + ". Please verify Ollama is running at localhost:11434" });
               }
             });
         }
@@ -164,9 +170,15 @@ Follow these rules strictly:
                         stream: false
                     })
                 })
-                .then(res => res.json())
-                .then(data => {
+                .then(async res => {
                     clearTimeout(timeoutId);
+                    if (!res.ok) {
+                        const text = await res.text();
+                        throw new Error(`Server Error ${res.status}: ${text || res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
                     if (data.response) {
                         sendResponse({ success: true, output: data.response });
                     } else {
@@ -174,7 +186,7 @@ Follow these rules strictly:
                     }
                 }).catch(err => {
                     clearTimeout(timeoutId);
-                    sendResponse({ success: false, error: err.name === 'AbortError' ? "Timeout" : "Connection Refused." });
+                    sendResponse({ success: false, error: err.name === 'AbortError' ? "Timeout" : "Connection Issue: " + err.message });
                 });
             }
         });
