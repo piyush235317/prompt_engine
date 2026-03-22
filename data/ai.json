@@ -1,0 +1,20 @@
+{
+  "cards": [
+    {
+      "title": "Professional Rewrite",
+      "content": "Rewrite the following text to be professional, polite, and grammatically perfect for a corporate environment: \n\n{{ai}}"
+    },
+    {
+      "title": "Smart Summarizer",
+      "content": "Analyze the following content and provide a bulleted summary of the 3 most important takeaways: \n\n{{ai}}"
+    },
+    {
+      "title": "Code Explainer",
+      "content": "Act as a senior software engineer. Explain what this code does and suggest 2 specific improvements for readability: \n\n```\n{{ai}}\n```"
+    },
+    {
+      "title": "Tone Shifter (Friendly)",
+      "content": "Rewrite this to sound much more friendly, warm, and encouraging: \n\n{{ai}}"
+    }
+  ]
+}

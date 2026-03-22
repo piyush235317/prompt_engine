@@ -10,26 +10,34 @@
     "128": "icons/icon128.png"
   },
 
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "scripting", "tabs"],
 
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://gemini.google.com/*",
-    "https://claude.ai/*"
+    "https://claude.ai/*",
+    "https://api.x.ai/*",
+    "http://localhost:11434/*",
+    "<all_urls>"
   ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
 
   "content_scripts": [
     {
       "matches": [
-        "https://chatgpt.com/*",
-        "https://gemini.google.com/*",
-        "https://claude.ai/*"
+        "<all_urls>"
       ],
       "js": [
         "popup/ui.js",
         "popup/api.js",
         "popup/sidebar.js",
         "popup/cards.js",
+        "popup/settings.js",
+        "popup/prompt_lab.js",
         "popup/popup.js",
         "popup/inject.js"
       ],

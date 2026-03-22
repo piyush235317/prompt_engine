@@ -1,8 +1,16 @@
 {
   "cards": [
     {
-      "title": "Study",
-      "content": "Explain step by step..."
+      "title": "Feynman Technique",
+      "content": "Explain the concept of '{{input}}' as if I am 12 years old. Use powerful analogies and avoid complex jargon."
+    },
+    {
+      "title": "Generate a Quiz",
+      "content": "I am studying '{{input}}'. Give me a 5-question multiple choice quiz to test my knowledge, and provide the answer key at the very end."
+    },
+    {
+      "title": "Create Study Guide",
+      "content": "Create a structured, 1-week study plan to master the following topic from scratch:\n\n{{input}}"
     }
   ]
 }

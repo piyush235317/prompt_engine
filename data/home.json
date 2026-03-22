@@ -1,12 +1,16 @@
 {
   "cards": [
     {
-      "title": "Deep Understanding",
-      "content": "Solve and explain the topic..."
+      "title": "Email Drafter",
+      "content": "Compose a professional email regarding:\n\n{{input}}\n\nEnsure the tone is polite and clear."
     },
     {
-      "title": "Coding",
-      "content": "Solve the problem..."
+      "title": "Fix Grammar",
+      "content": "Please review the following text for grammar, punctuation, and clarity. Suggest improvements if needed:\n\n{{input}}"
+    },
+    {
+      "title": "Code Explainer",
+      "content": "Explain what the following code snippet does in simple terms:\n\n```\n{{input}}\n```"
     }
   ]
 }

@@ -12,15 +12,30 @@ function createPanel() {
 
     panel.innerHTML = `
       <div class="header">
-        GoPrompts
-        <button id="minimize-btn" class="theme-btn" style="right: 12px; font-weight: bold;" title="Close">✕</button>
-        <button id="theme-toggle" class="theme-btn" style="right: 34px;" title="Toggle Theme">🌙</button>
+        <div class="header-title" style="pointer-events: none; display: flex; align-items: center; gap: 6px;">
+            Promptly
+            <span id="api-status-dot" title="API Status Unknown" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #808080; margin-top: 2px; transition: all 0.3s ease; box-shadow: 0 0 4px rgba(0,0,0,0.1);"></span>
+        </div>
+        <div class="header-controls">
+          <button id="pin-btn" class="mac-control-btn" title="Pin to Right Mid Point">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-2.115a2 2 0 0 0-.586-1.414L15.328 10.38a2 2 0 0 1-.586-1.414V4.5A1.5 1.5 0 0 0 13.242 3h-2.485A1.5 1.5 0 0 0 9.27 4.5v4.465a2 2 0 0 1-.586 1.414l-3.086 3.091a2 2 0 0 0-.586 1.414V17Z"/></svg>
+          </button>
+          <button id="minimize-btn" class="mac-close-btn" title="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="app-container">
-        <div id="sidebar"></div>
+        <div id="sidebar" class="browser-sidebar">
+          <div id="sidebar-scroll"></div>
+          <div id="sidebar-footer"></div>
+        </div>
         <div id="tabs-container"></div>
       </div>
+      <div class="resizer resizer-l"></div>
+      <div class="resizer resizer-b"></div>
+      <div class="resizer resizer-lb"></div>
     `;
 
     document.body.appendChild(panel);
@@ -42,23 +57,9 @@ function createPanel() {
     });
     resizeObserver.observe(panel);
 
-    // Theme toggle logic
-    const themeToggle = panel.querySelector('#theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        panel.classList.toggle('dark-mode');
-        if (panel.classList.contains('dark-mode')) {
-            themeToggle.innerHTML = '☀️';
-            localStorage.setItem('goprompts-theme', 'dark');
-        } else {
-            themeToggle.innerHTML = '🌙';
-            localStorage.setItem('goprompts-theme', 'light');
-        }
-    });
-
     // Load saved theme
     if (localStorage.getItem('goprompts-theme') === 'dark') {
         panel.classList.add('dark-mode');
-        themeToggle.innerHTML = '☀️';
     }
 
     // 3. FAB Click Logic (Hide FAB, Show Panel)
@@ -84,10 +85,47 @@ function createPanel() {
 
         requestAnimationFrame(() => {
             panel.classList.add('active');
+            
+            // Re-apply pinning if saved
+            if (localStorage.getItem('goprompts-pinned') === 'true') {
+                pinPanel();
+            }
         });
     });
 
-    // 4. Minimize Logic
+    // 4. Pinning Logic
+    const pinBtn = panel.querySelector('#pin-btn');
+    function pinPanel() {
+        panel.style.transition = 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+        panel.style.left = (window.innerWidth - panel.offsetWidth) + 'px';
+        panel.style.top = (window.innerHeight / 2 - panel.offsetHeight / 2) + 'px';
+        panel.style.right = '0';
+        panel.style.bottom = 'auto'; // ensure it's not sticking to bottom
+        panel.classList.add('pinned');
+        localStorage.setItem('goprompts-pinned', 'true');
+        localStorage.setItem('goprompts-pos-x', panel.style.left);
+        localStorage.setItem('goprompts-pos-y', panel.style.top);
+        
+        // Reset transition after animation
+        setTimeout(() => { panel.style.transition = ''; }, 400);
+    }
+
+    function unpinPanel() {
+        panel.classList.remove('pinned');
+        localStorage.setItem('goprompts-pinned', 'false');
+    }
+
+    if (pinBtn) {
+        pinBtn.addEventListener('click', () => {
+            if (panel.classList.contains('pinned')) {
+                unpinPanel();
+            } else {
+                pinPanel();
+            }
+        });
+    }
+
+    // 5. Minimize Logic
     const minimizeBtn = panel.querySelector('#minimize-btn');
     if (minimizeBtn) {
         minimizeBtn.addEventListener('click', () => {
@@ -112,6 +150,7 @@ function createPanel() {
 
     header.addEventListener('mousedown', (e) => {
         if (e.target.tagName.toLowerCase() === 'button') return;
+        if (panel.classList.contains('pinned')) return; // Disable dragging when pinned
         
         isDraggingBox = true;
         boxDragStartX = e.clientX;
@@ -123,6 +162,7 @@ function createPanel() {
         
         header.style.cursor = 'grabbing';
         panel.style.transition = 'none';
+        // unpinPanel(); // PREVIOUSLY: Unpin on drag. NOW: Disable dragging instead.
         e.preventDefault();
     });
 
@@ -152,7 +192,60 @@ function createPanel() {
         }
     });
 
-    // 6. Sliding logic for tabs and prompts
+    // 6. Resizing logic for the Prompt Box
+    function initResizer(resizer, direction) {
+        let startX, startY, startWidth, startHeight, startLeft;
+
+        resizer.addEventListener('mousedown', (e) => {
+            if (panel.classList.contains('pinned')) return; // Prevent resizing when pinned
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(panel).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(panel).height, 10);
+            startLeft = panel.offsetLeft;
+            
+            const onMouseMove = (e) => {
+                if (direction.includes('l')) {
+                    const dx = e.clientX - startX;
+                    const newWidth = startWidth - dx;
+                    if (newWidth > 300) { // Check min-width
+                        panel.style.width = newWidth + 'px';
+                        panel.style.left = (startLeft + dx) + 'px';
+                    }
+                }
+                if (direction.includes('b')) {
+                    panel.style.height = (startHeight + e.clientY - startY) + 'px';
+                }
+            };
+
+            const onMouseUp = () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                panel.style.transition = ''; 
+                
+                // If we were resizing and pinned, we might want to stay pinned but update storage
+                if (panel.classList.contains('pinned')) {
+                    // Update left position to ensure it's still at the right edge if width changed
+                    panel.style.left = (window.innerWidth - panel.offsetWidth) + 'px';
+                }
+                
+                localStorage.setItem('goprompts-pos-x', panel.style.left);
+                localStorage.setItem('goprompts-pos-y', panel.style.top);
+            };
+
+            panel.style.transition = 'none'; 
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+    }
+
+    initResizer(panel.querySelector('.resizer-l'), 'l');
+    initResizer(panel.querySelector('.resizer-b'), 'b');
+    // Corner handle for bottom-left resizing
+    initResizer(panel.querySelector('.resizer-lb'), 'lb');
+
+    // 7. Sliding logic for tabs and prompts
     function makeScrollable(ele) {
         if (!ele) return;
         let isDown = false;
@@ -198,7 +291,37 @@ function createPanel() {
             }
         }, true);
     }
-
-    makeScrollable(panel.querySelector('#sidebar'));
+    
+    makeScrollable(panel.querySelector('#sidebar-scroll'));
     makeScrollable(panel.querySelector('#tabs-container'));
 }
+
+function updateApiStatus() {
+    const dot = document.getElementById("api-status-dot");
+    if (!dot) return;
+    chrome.storage.local.get(['goprompts_api_key', 'goprompts_ai_provider'], (settings) => {
+        const hasKey = !!settings.goprompts_api_key;
+        const provider = settings.goprompts_ai_provider || 'ollama';
+        
+        if (provider === 'ollama') {
+            dot.style.background = "#34C759"; // Ollama is local, assume green if active
+            dot.title = "Local Pipeline: Active";
+            dot.style.boxShadow = "0 0 6px rgba(52, 199, 89, 0.4)";
+        } else if (hasKey) {
+            dot.style.background = "#34C759";
+            dot.title = "Cloud API: Connected";
+            dot.style.boxShadow = "0 0 6px rgba(52, 199, 89, 0.4)";
+        } else {
+            dot.style.background = "#FF3B30";
+            dot.title = "API Key Missing";
+            dot.style.boxShadow = "0 0 6px rgba(255, 59, 48, 0.4)";
+        }
+    });
+}
+
+// Listen for storage changes to update dot
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.goprompts_api_key || changes.goprompts_ai_provider) {
+        updateApiStatus();
+    }
+});

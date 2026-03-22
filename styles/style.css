@@ -6,8 +6,8 @@
     --sidebar-dark: rgba(0, 0, 0, 0.15);
     --text-light: #1d1d1f;
     --text-dark: #f5f5f7;
-    --border-light: rgba(0, 0, 0, 0.05); /* Softer borders */
-    --border-dark: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(0, 0, 0, 0.08); /* Slightly more visible but still soft */
+    --border-dark: rgba(255, 255, 255, 0.12);
     --card-light: rgba(255, 255, 255, 1);
     --card-dark: rgba(45, 45, 45, 1);
     --card-hover-light: rgba(0, 0, 0, 0.03);
@@ -28,17 +28,19 @@
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     color: var(--text-light);
-    z-index: 999998;
+    z-index: 2147483647 !important;
     border-radius: 18px;
     overflow-y: hidden;
     overflow-x: hidden;
     padding: 0; /* Removing main padding so sidebar can be flush to the edge */
     box-shadow: var(--shadow-raised-light);
-    resize: both;
     min-width: 300px;
     min-height: 300px;
     max-width: 90vw;
     max-height: 90vh;
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
     
     /* Font System */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -55,6 +57,16 @@
 #prompt-box * {
     font-family: inherit;
     box-sizing: border-box;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 #prompt-box.active {
@@ -94,90 +106,306 @@
 }
 
 /* ===== Header ===== */
+.header-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 400;
+    font-family: 'Pacifico', cursive;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    padding-top: 2px; /* Visual adjustment for cursive descenders */
+    opacity: 0.9;
+}
+
+/* ===== Window Controls (Premium Single Icon) ===== */
+.mac-close-btn, .mac-control-btn {
+    appearance: none;
+    border: none;
+    background: rgba(128, 128, 128, 0.08);
+    color: var(--text-light);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.7;
+    padding: 0;
+    outline: none;
+}
+
+.mac-close-btn svg, .mac-control-btn svg {
+    stroke-width: 3;
+}
+
+#prompt-box.dark-mode .mac-close-btn, #prompt-box.dark-mode .mac-control-btn {
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 1;
+}
+
+#prompt-box.dark-mode .mac-close-btn:hover {
+    background: rgba(255, 69, 58, 0.25);
+    color: #ff453a;
+}
+
+#prompt-box.dark-mode .mac-control-btn:hover {
+    background: rgba(0, 122, 255, 0.25);
+    color: #0c96ff;
+}
+
+.mac-close-btn:hover {
+    background: rgba(255, 69, 58, 0.15);
+    color: #ff453a;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.mac-control-btn:hover {
+    color: white;
+    transform: scale(1.05);
+}
+
+#prompt-box.pinned #pin-btn {
+    opacity: 1;
+    background: var(--accent);
+    color: white;
+}
+
+#prompt-box.dark-mode .mac-control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-dark);
+}
+
 .header {
     text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-light);
-    padding: 22px 0;
+    padding: 16px; 
     border-bottom: 1px solid var(--border-light);
-    background: transparent;
+    background: rgba(128, 128, 128, 0.02);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.theme-btn {
+.header-controls {
     position: absolute;
-    top: 14px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    padding: 4px;
-    border-radius: 4px;
+    right: 16px;
+    top: 13px; /* Slightly higher than center */
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--text-light);
-    opacity: 0.5;
-    transition: opacity 0.2s, background 0.2s;
+    gap: 8px;
 }
 
-.theme-btn:hover {
-    background: var(--card-hover-light);
-    opacity: 1;
+#prompt-box.dark-mode .header-title {
+    color: var(--text-dark);
+}
+
+/* Clear legacy theme-btn class if no longer used */
+.theme-btn {
+    display: none;
+}
+
+/* ===== Context Menu ===== */
+.context-menu {
+    position: absolute;
+    background: var(--bg-light); /* Using light bg for context menu */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light); /* Using light border */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Lighter shadow */
+    border-radius: 10px;
+    padding: 5px;
+    min-width: 120px;
+    z-index: 100000;
+    display: none;
+    animation: fadeIn 0.1s ease;
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light); /* Using light text */
+    transition: all 0.2s;
+}
+
+.context-menu-item:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.context-menu-item.danger:hover {
+    background: #ff3b30;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: var(--border-light); /* Using light border */
+    margin: 4px 0;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* ===== Resizers ===== */
+.resizer {
+    position: absolute;
+    z-index: 100;
+}
+
+.resizer-l {
+    width: 10px;
+    top: 0;
+    left: 0;
+    bottom: 10px;
+    cursor: ew-resize;
+    background: transparent;
+}
+
+.resizer-b {
+    height: 10px;
+    left: 10px;
+    right: 0;
+    bottom: 0;
+    cursor: ns-resize;
+    background: transparent;
+}
+
+.resizer-lb {
+    width: 20px;
+    height: 20px;
+    left: 0;
+    bottom: 0;
+    cursor: nesw-resize;
+    background: transparent;
+}
+
+/* Optional: visual Hint on hover */
+.resizer:hover {
+    background: rgba(0, 122, 255, 0.05);
 }
 
 /* ===== Main Layout ===== */
 .app-container {
     display: flex;
-    height: calc(100% - 44px);
+    flex: 1;
+    overflow: hidden;
 }
 
 #sidebar {
-    width: 75px;
+    width: 68px; /* Increased from 64px for more room */
     background: var(--sidebar-light);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding-top: 14px;
-    overflow-y: auto;
-    scrollbar-width: none;
+    height: 100%;
     border-right: 1px solid var(--border-light);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-#sidebar::-webkit-scrollbar {
+
+.browser-sidebar {
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+#sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 14px;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#sidebar-scroll::-webkit-scrollbar {
     display: none;
 }
 
-.side-tab {
-    width: 85%;
-    text-align: center;
-    padding: 8px 0;
-    margin-bottom: 6px;
-    cursor: pointer;
-    color: #8e8e93;
-    font-size: 11px;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    font-weight: 500;
+#sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 14px;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    background: var(--sidebar-light);
 }
 
-.side-tab span {
-    display: block;
-    font-size: 22px;
-    margin-bottom: 4px;
+#prompt-box.dark-mode #sidebar-footer {
+    border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.side-tab {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0; /* More balanced padding */
+    margin-bottom: 2px;
+    cursor: pointer;
+    color: #55555c;
+    font-size: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    opacity: 0.6;
 }
 
 .side-tab:hover {
+    opacity: 0.9;
     background-color: var(--card-hover-light);
 }
 
 .side-tab.active {
-    background-color: var(--card-light);
-    color: var(--accent);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    opacity: 1;
+    color: white;
+    background: var(--accent);
+    border-radius: 12px;
+    margin: 4px 6px; /* Reduced from 8px to fix cropping */
+    width: calc(100% - 12px); /* Matches 6px margin */
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+}
+
+.side-tab.active svg {
+    color: white;
+}
+
+.tab-active-indicator {
+    display: none; /* Removed in favor of full tab background highlight */
+}
+
+.tab-label {
+    font-size: 9px;
+    margin-top: 5px;
+    opacity: 0.7;
+    max-width: 60px; /* Increased from 56px */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    transition: opacity 0.2s, font-weight 0.2s;
+}
+
+.side-tab.active .tab-label {
+    opacity: 1;
+    font-weight: 700;
+}
+
+.add-tab-btn {
+    margin-top: auto;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.add-tab-btn:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.05);
 }
 
 /* ===== Content ===== */
@@ -194,14 +422,14 @@
 /* ===== Cards ===== */
 .card {
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 10px 14px;
     border: 1px solid var(--border-light);
-    margin-bottom: 12px;
-    border-radius: 14px;
+    margin-bottom: 8px;
+    border-radius: 12px;
     background: var(--card-light);
     transition: all 0.2s ease;
     position: relative;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     z-index: 10; /* Base stack */
 }
 
@@ -214,8 +442,7 @@
 .card-header {
     position: absolute !important;
     right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 10px;
     border-radius: 5px;
     transition: background 0.2s ease;
     z-index: 20;
@@ -224,6 +451,12 @@
 }
 
 .card-header .menu-btn {
+    appearance: none !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    margin: 0 !important;
     border-radius: 4px;
     color: #8e8e93 !important;
     font-size: 20px !important;
@@ -232,57 +465,88 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .card-header:hover .menu-btn {
-    background: var(--card-hover-light);
+    background: var(--card-hover-light) !important;
     color: var(--text-light) !important;
 }
 
+.card-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+    padding-right: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    line-height: 1.25;
+}
+
+.card-content-wrapper {
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
 .card-content {
-    font-size: 14.5px;
-    line-height: 1.45;
+    font-size: 13px;
+    line-height: 1.4;
     color: var(--text-light);
+    opacity: 0.8; /* Subdued read-only feel */
     white-space: pre-wrap;
-    padding-right: 24px; /* Stop text running into kebab */
-}
-
-/* ===== Card Menu Dropdown ===== */
-.menu-dropdown {
-    position: absolute;
-    right: 0;
-    top: 28px;
-    background: var(--card-light);
-    border: 1px solid var(--border-light);
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    z-index: 1000;
-    flex-direction: column;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    overflow-wrap: break-word;
+    
+    /* Uniform height constraints */
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    min-width: 120px;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    max-height: 20px;
+    transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.menu-dropdown button {
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    padding: 10px 14px;
-    text-align: left;
-    font-size: 14px;
+.card:hover .card-content {
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
+    max-height: 600px;
+}
+
+/* Modal Specific Textarea for Prompts */
+#prompt-box .modal-textarea {
     width: 100%;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
     color: var(--text-light);
-    transition: background 0.2s;
-    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    min-height: 120px;
+    resize: vertical;
+    transition: all 0.2s;
+    margin-bottom: 20px;
 }
 
-.menu-dropdown button:hover {
-    background: var(--card-hover-light);
+#prompt-box .modal-textarea:focus {
+    border-color: var(--accent);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(10,132,255,0.1);
+    outline: none;
 }
 
-.menu-dropdown .edit-btn {
-    border-bottom: 1px solid var(--border-light);
+#prompt-box.dark-mode .modal-textarea {
+    background: rgba(255,255,255,0.05);
+    color: white;
 }
 
 
@@ -296,6 +560,11 @@
 
 #prompt-box.dark-mode .header {
     border-bottom-color: var(--border-dark);
+    background: rgba(0, 0, 0, 0.15);
+    color: var(--text-dark);
+}
+
+#prompt-box.dark-mode .header-title {
     color: var(--text-dark);
 }
 
@@ -313,7 +582,7 @@
 }
 
 #prompt-box.dark-mode .side-tab {
-    color: #98989d;
+    color: #c7c7cc; /* Brighter, more contrasty silver for dark mode */
 }
 
 #prompt-box.dark-mode .side-tab:hover {
@@ -321,19 +590,32 @@
 }
 
 #prompt-box.dark-mode .side-tab.active {
-    background-color: var(--card-dark);
-    color: #0a84ff; /* Apple dark mode blue */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.08); /* Transparent pill aesthetic */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 #prompt-box.dark-mode .card {
     background: var(--card-dark);
     border-color: var(--border-dark);
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    color: var(--text-dark);
 }
 
 #prompt-box.dark-mode .card:hover {
-    box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.card:active {
+    transform: scale(0.985);
+    transition: transform 0.05s ease;
+}
+/* Eliminate biological lag perception instantly by snapping the card natively */
+#prompt-box.dark-mode .card:active {
+    transform: scale(0.985);
+    transition: transform 0.05s ease;
 }
 
 #prompt-box.dark-mode .card-header:hover .menu-btn {
@@ -341,8 +623,18 @@
     color: var(--text-dark) !important;
 }
 
+#prompt-box.dark-mode .card-title {
+    color: var(--text-dark);
+}
+
+#prompt-box.dark-mode .card-content-wrapper {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.03);
+}
+
 #prompt-box.dark-mode .card-content {
     color: var(--text-dark);
+    opacity: 0.8;
 }
 
 #prompt-box.dark-mode .menu-dropdown {
@@ -355,10 +647,599 @@
     color: var(--text-dark);
 }
 
-#prompt-box.dark-mode .menu-dropdown button:hover {
-    background: var(--card-hover-dark);
+/* Badges */
+.badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+.badge-template { background: rgba(255, 170, 0, 0.15); color: #d4a017; }
+.badge-ai { background: rgba(0, 122, 255, 0.15); color: #0a84ff; }
+
+/* Add Prompt Action */
+.add-btn-container {
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+.add-prompt-pill {
+    padding: 10px 24px;
+    cursor: pointer;
+    border-radius: 20px;
+    border: 1px dashed var(--border-light);
+    background: transparent;
+    color: var(--text-light);
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.add-prompt-pill:hover {
+    border-style: solid;
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(10, 132, 255, 0.05);
 }
 
-#prompt-box.dark-mode .menu-dropdown .edit-btn {
+#prompt-box.dark-mode .add-prompt-pill {
+    color: var(--text-dark);
+}
+
+/* ===== Drag and Drop ===== */
+.dragging {
+    opacity: 0.4;
+    cursor: grabbing !important;
+}
+
+.card, .side-tab {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+#sidebar .side-tab.drag-over {
+    background: rgba(120, 120, 120, 0.1);
+    border-radius: 8px;
+}
+
+#tabs-container .card.drag-over {
+    border: 2px dashed var(--accent, #0a84ff);
+    transform: scale(1.02);
+}
+
+/* ===== Settings UI Adaptivity ===== */
+.settings-container {
+    padding: 16px;
+    text-align: left;
+    animation: fadeIn 0.2s ease;
+    color: var(--text-light); /* Default light mode */
+}
+
+#prompt-box.dark-mode .settings-container {
+    color: var(--text-dark);
+}
+
+.settings-group {
+    margin-bottom: 22px;
+}
+
+.settings-label {
+    font-size: 13px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.settings-input {
+    width: 100%;
+    padding: 10.5px;
+    border-radius: 8px;
+    background: rgba(120, 120, 120, 0.1);
+    border: 1px solid var(--border-light);
+    color: inherit;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+#prompt-box.dark-mode .settings-input {
+    border-color: var(--border-dark);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-input:focus {
+    border-color: var(--accent);
+}
+
+.settings-hint {
+    margin-top: 14px;
+    font-size: 11.5px;
+    opacity: 0.55;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ===== Chat UI Elements ===== */
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: fadeIn 0.2s ease;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: none;
+}
+
+.chat-messages::-webkit-scrollbar {
+    display: none;
+}
+
+.msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    /* Allow formatted content but keep newlines for plain text */
+    white-space: normal;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.msg h1, .msg h2, .msg h3, .msg h4, .msg h5, .msg h6 {
+    margin: 10px 0 5px 0;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.msg h1 { font-size: 1.5em; }
+.msg h2 { font-size: 1.3em; }
+.msg h3 { font-size: 1.1em; }
+.msg h4 { font-size: 1em; }
+.msg h5 { font-size: 0.9em; }
+.msg h6 { font-size: 0.8em; }
+.msg strong { font-weight: 700; color: inherit; }
+.msg em { font-style: italic; }
+.msg p { margin: 0 0 8px 0; }
+.msg p:last-child { margin-bottom: 0; }
+
+.msg-user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.msg-bot {
+    align-self: flex-start;
+    background: var(--card-light);
+    color: var(--text-light);
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-light);
+}
+
+#prompt-box.dark-mode .msg-bot {
+    background: var(--card-dark);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
+}
+
+.chat-input-area {
+    padding: 12px;
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-light);
+    backdrop-filter: blur(10px);
+}
+
+#prompt-box.dark-mode .chat-input-area {
+    border-top-color: var(--border-dark);
+    background: var(--bg-dark);
+}
+
+.chat-input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 8px 12px;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.chat-enhance-btn {
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 8px;
+    color: var(--accent);
+    opacity: 0.8;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 6px;
+}
+
+.chat-enhance-btn:hover {
+    opacity: 1;
+    background: rgba(10, 132, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.chat-input-wrapper:focus-within {
+    border-color: var(--accent);
+    background: rgba(120, 120, 120, 0.15);
+}
+
+#chat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 14px;
+    padding: 8px 0;
+    outline: none;
+    resize: none;
+    max-height: 100px;
+}
+
+.chat-send-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: transform 0.1s;
+}
+
+.chat-send-btn:active {
+    transform: scale(0.9);
+}
+
+.chat-context-btn {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-bottom: 8px;
+    cursor: pointer;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    transition: all 0.2s;
+}
+
+.chat-context-btn:hover {
+    opacity: 1;
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.typing-indicator {
+    font-style: italic;
+    font-size: 11.5px;
+    opacity: 0.5;
+    margin-left: 12px;
+    margin-bottom: 8px;
+}
+
+/* ===== Premium Modal System ===== */
+#prompt-box .modal-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    border-radius: 18px;
+    animation: fadeIn 0.15s ease-out;
+}
+
+#prompt-box .modal-content {
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 24px;
+    width: 340px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#prompt-box .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text-light);
+}
+
+#prompt-box .modal-subtitle {
+    font-size: 12px;
+    opacity: 0.5;
+    margin-bottom: 20px;
+}
+
+#prompt-box .modal-field {
+    margin-bottom: 16px;
+}
+
+#prompt-box .modal-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+#prompt-box .modal-input {
+    width: 100%;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+    color: var(--text-light);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+#prompt-box .modal-input:focus {
+    border-color: var(--accent);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(10,132,255,0.1);
+    outline: none;
+}
+
+#prompt-box .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+    max-height: 140px;
+    overflow-y: auto;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+#prompt-box .icon-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    background: rgba(0,0,0,0.02);
+    border-radius: 12px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    color: var(--text-light);
+}
+
+#prompt-box .icon-option:hover {
+    background: rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+}
+
+#prompt-box .icon-option.selected {
+    border-color: var(--accent);
+    background: white;
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(10,132,255,0.15);
+}
+
+#prompt-box .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    outline: none;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: rgba(128, 128, 128, 0.1);
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+}
+
+.btn-secondary:hover {
+    background: rgba(128, 128, 128, 0.15);
+    border-color: rgba(128, 128, 128, 0.2);
+}
+
+#prompt-box.dark-mode .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
+}
+
+#prompt-box.dark-mode .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode overrides for modal */
+#prompt-box.dark-mode .modal-content {
+    background: #2c2c2e;
+    border-color: rgba(255,255,255,0.1);
+}
+#prompt-box.dark-mode .modal-title { color: white; }
+#prompt-box.dark-mode .modal-input {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+#prompt-box.dark-mode .icon-option { color: white; background: rgba(255,255,255,0.05); }
+#prompt-box.dark-mode .icon-option.selected { background: var(--accent); color: white; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.9) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+/* ===== Main Nav Tabs (Optimize / Library) ===== */
+.main-nav-tabs {
+    display: flex;
+    position: relative;
+    background: rgba(0, 0, 0, 0.03); /* Even subtler background */
+    padding: 0 16px; /* Removed vertical padding */
+    justify-content: space-around; /* Distribute tabs */
+    border-bottom: 1px solid var(--border-light);
+    z-index: 100;
+}
+
+#prompt-box.dark-mode .main-nav-tabs {
+    background: rgba(0, 0, 0, 0.15);
     border-bottom-color: var(--border-dark);
+}
+
+.nav-tab {
+    padding: 10px 4px; /* Slightly more vertical space but still compact */
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    opacity: 0.4;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    flex: 1;
+    text-align: center;
+}
+
+#prompt-box.dark-mode .nav-tab {
+    color: var(--text-dark);
+}
+
+.nav-tab:hover {
+    opacity: 0.8;
+}
+
+.nav-tab.active {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.nav-indicator {
+    position: absolute;
+    bottom: -1px;
+    height: 3px;
+    background: var(--accent);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px 4px 0 0;
+    /* Removed heavy glow, added a very subtle one */
+    box-shadow: 0 -1px 4px rgba(0, 122, 255, 0.1);
+}
+
+/* --- Pill-style Add System (Top) --- */
+.library-add-system {
+    display: flex;
+    gap: 12px;
+    padding: 16px 16px 12px 16px;
+    animation: tabSwitch 0.3s ease-out;
+}
+
+.add-pill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(128, 128, 128, 0.05);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#prompt-box.dark-mode .add-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.add-pill span {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.add-pill:hover {
+    background: rgba(128, 128, 128, 0.1);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.add-pill.input-based {
+    background: rgba(0, 122, 255, 0.05);
+    border-color: rgba(0, 122, 255, 0.2);
+    color: var(--accent);
+}
+
+.add-pill.input-based:hover {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+/* --- Library Pill Filters --- */
+.prompt-lab-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes tabSwitch {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#tabs-container {
+    animation: tabSwitch 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
