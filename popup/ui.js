@@ -14,7 +14,7 @@ function createPanel() {
       <div class="header">
         <div class="header-title" style="pointer-events: none; display: flex; align-items: center; gap: 6px;">
             Promptly
-            <span id="api-status-dot" title="API Status Unknown" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #808080; margin-top: 2px; transition: all 0.3s ease; box-shadow: 0 0 4px rgba(0,0,0,0.1);"></span>
+            <svg id="api-status-dot" title="API Status Unknown" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #808080; margin-top: 2px; transition: all 0.3s ease; filter: drop-shadow(0 0 4px rgba(0,0,0,0.1)); cursor: help;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         </div>
         <div class="header-controls">
           <button id="pin-btn" class="mac-control-btn" title="Pin to Right Mid Point">
@@ -301,18 +301,18 @@ function updateApiStatus() {
     if (!dot) return;
     
     // Set to "checking" state initially
-    dot.style.background = "#ffd60a"; // Yellow
-    dot.style.boxShadow = "0 0 6px rgba(255, 214, 10, 0.4)";
+    dot.style.color = "#ffd60a"; // Yellow
+    dot.style.filter = "drop-shadow(0 0 6px rgba(255, 214, 10, 0.4))";
     dot.title = "Verifying Connection...";
 
     chrome.runtime.sendMessage({ type: "PING_PROVIDER" }, (res) => {
         if (res && res.success) {
-            dot.style.background = "#34C759"; // Green
-            dot.style.boxShadow = "0 0 8px rgba(52, 199, 89, 0.4)";
+            dot.style.color = "#34C759"; // Green
+            dot.style.filter = "drop-shadow(0 0 8px rgba(52, 199, 89, 0.6))";
             dot.title = res.message || "Pipeline: Online";
         } else {
-            dot.style.background = "#FF3B30"; // Red
-            dot.style.boxShadow = "0 0 8px rgba(255, 59, 48, 0.4)";
+            dot.style.color = "#FF3B30"; // Red
+            dot.style.filter = "drop-shadow(0 0 8px rgba(255, 59, 48, 0.4))";
             dot.title = res?.error || "Pipeline: Offline";
         }
     });

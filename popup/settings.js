@@ -80,7 +80,7 @@ function renderSettingsUI() {
                     <span id="ai-status-desc" style="font-size: 11px; opacity: 0.6;">Checking connectivity...</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div id="ai-status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: #8e8e93; transition: all 0.3s; box-shadow: 0 0 0 rgba(0,0,0,0);"></div>
+                    <svg id="ai-status-dot" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #8e8e93; transition: all 0.3s; filter: drop-shadow(0 0 0 rgba(0,0,0,0));"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
                 </div>
             </div>
 
@@ -92,18 +92,18 @@ function renderSettingsUI() {
         const statusDesc = dynamicRoot.querySelector('#ai-status-desc');
 
         const checkAIStatus = () => {
-            statusDot.style.background = '#ffd60a'; // Yellow for checking
-            statusDot.style.boxShadow = '0 0 8px rgba(255, 214, 10, 0.4)';
+            statusDot.style.color = '#ffd60a'; // Yellow for checking
+            statusDot.style.filter = 'drop-shadow(0 0 8px rgba(255, 214, 10, 0.4))';
             statusDesc.innerText = 'Pinging AI Provider...';
 
             chrome.runtime.sendMessage({ type: "PING_PROVIDER" }, (res) => {
                 if (res && res.success) {
-                    statusDot.style.background = '#32d74b'; // Green
-                    statusDot.style.boxShadow = '0 0 10px rgba(50, 215, 75, 0.5)';
+                    statusDot.style.color = '#32d74b'; // Green
+                    statusDot.style.filter = 'drop-shadow(0 0 10px rgba(50, 215, 75, 0.5))';
                     statusDesc.innerText = res.message || 'System Online';
                 } else {
-                    statusDot.style.background = '#ff453a'; // Red
-                    statusDot.style.boxShadow = '0 0 10px rgba(255, 69, 58, 0.5)';
+                    statusDot.style.color = '#ff453a'; // Red
+                    statusDot.style.filter = 'drop-shadow(0 0 10px rgba(255, 69, 58, 0.5))';
                     statusDesc.innerText = res?.error || 'Connection Failed';
                 }
             });
